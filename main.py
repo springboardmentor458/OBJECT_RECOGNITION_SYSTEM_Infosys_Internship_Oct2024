@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 
 
+
 # Part 1: Download and Annotate Images
 def download_and_annotate_images(json_path, output_folder):
     with open(json_path, 'r') as file:
