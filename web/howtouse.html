@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Use - Object Detection App</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            background: linear-gradient(to bottom, #000428, #004e92);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 4% auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ffcc00;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #ffa500;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            text-align: justify;
+        }
+
+        .step {
+            margin-bottom: 40px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .step img {
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .step h3 {
+            font-size: 1.6rem;
+            color: #ffa500;
+            margin-bottom: 10px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: linear-gradient(135deg, #ff5722, #ff9800);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>How to Use the Object Detection App</h1>
+        <p>Follow these detailed steps to fully utilize the features of the Object Detection App and experience real-time object analysis:</p>
+
+        <div class="step">
+            <h3>Step 1: Upload an Image</h3>
+            <img src="image_upload_icon.png" alt="Upload Image">
+            <p>Navigate to the homepage and click on the "Upload" button. Select an image from your device to analyze. The app will instantly process the image and provide detailed results, including identified objects and their classifications.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Upload a Video</h3>
+            <img src="video_upload_icon.png" alt="Upload Video">
+            <p>Choose a video file from your device to perform frame-by-frame object detection. This feature is perfect for analyzing videos and extracting detailed insights.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Use Live Detection</h3>
+            <img src="live_camera_icon.png" alt="Live Camera">
+            <p>Activate the live detection feature by granting the app access to your device's camera. This allows real-time object analysis, perfect for dynamic environments or on-the-go scenarios.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: View Results</h3>
+            <img src="results_icon.png" alt="View Results">
+            <p>Once the detection process is complete, you can view detailed results such as object names, confidence scores, and bounding boxes. This information is presented in an easy-to-read format.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 5: Provide Feedback</h3>
+            <img src="feedback_icon.png" alt="Feedback">
+            <p>We value your input! Use the "Feedback" section to share your thoughts, suggestions, or report any issues. Your feedback helps us enhance the app's functionality and performance.</p>
+        </div>
+
+        <button onclick="window.location.href='/'">Back to Homepage</button>
+    </div>
+</body>
+</html>
