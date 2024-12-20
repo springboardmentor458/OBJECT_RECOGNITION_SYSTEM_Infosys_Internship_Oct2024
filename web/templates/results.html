@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detection Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .detection {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            padding: 20px;
+            width: 80%;
+            text-align: center;
+        }
+        .detection img, .detection video {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .parameters {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 80%;
+        }
+        .parameters h3 {
+            margin-bottom: 10px;
+        }
+        .buttons {
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn-back {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-reset {
+            background-color: #ff0000;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Detection Results</h1>
+    </header>
+    <div class="container">
+        <!-- Detection Results -->
+        {% for detection in detections %}
+        <div class="detection">
+            {% if detection.type == 'image' %}
+            <!-- Image Detection -->
+            <h3>Image Detection</h3>
+            <img src="data:image/png;base64,{{ detection.data }}" alt="Detected Image">
+            <p><strong>Detections:</strong></p>
+            <ul>
+                {% for item in detection.detections %}
+                <li>{{ item.class }} (Confidence: {{ item.confidence }}, BBox: {{ item.bounding_box }})</li>
+                {% endfor %}
+            </ul>
+            {% elif detection.type == 'video' %}
+            <!-- Video Detection -->
+            <h3>Video Detection</h3>
+            <video id="detectedVideo" controls autoplay loop>
+                <source src="{{ url_for('download_video', video_index=loop.index0) }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p><strong>Detections Per Frame:</strong></p>
+            <ul>
+                {% for frame in detection.detections %}
+                <li>Frame {{ loop.index }}: 
+                    {% for obj in frame %}
+                        {{ obj.class }} (Confidence: {{ obj.confidence }}, BBox: {{ obj.bounding_box }}){% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        <!-- Buttons for Navigation -->
+        <div class="buttons">
+            <a href="{{ url_for('index') }}"><button class="btn-back">Back to Application</button></a>
+            <a href="{{ url_for('reset_app') }}"><button class="btn-reset">Reset App</button></a>
+        </div>
+    </div>
+</body>
+</html>
