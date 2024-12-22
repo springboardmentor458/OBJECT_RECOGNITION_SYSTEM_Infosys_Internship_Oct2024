@@ -1,0 +1,8 @@
+Flask
+streamlit
+opencv-python
+numpy
+Pillow
+ultralytics
+matplotlib
+pyyaml
