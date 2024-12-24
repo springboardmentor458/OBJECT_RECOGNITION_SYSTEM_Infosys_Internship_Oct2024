@@ -148,7 +148,6 @@ st.title("🚀 YOLOv5 Object Detection")
 st.write("Welcome to the futuristic object detection tool powered by YOLOv5. Upload your images, videos or use the webcam to see object detection in action!")
 
 # Sidebar for input options
-st.sidebar.title("Control Panel")
 use_webcam = st.sidebar.checkbox("Use Webcam")
 uploaded_video = st.sidebar.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
 uploaded_image = st.sidebar.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
