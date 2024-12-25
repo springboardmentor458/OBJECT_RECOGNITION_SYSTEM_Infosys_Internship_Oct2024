@@ -1,0 +1,12 @@
+
+POST http://127.0.0.1:5000/detect
+Content-Type: multipart/form-data
+
+--boundary123
+Content-Disposition: form-data; name="image"; filename="000000292024.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\harsh\Downloads\val2017-20241106T125252Z-001\val2017\000000292024.jpg
+--boundary123--
+
+
