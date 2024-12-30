@@ -1,18 +1,18 @@
 import torch
 from PIL import Image
 import cv2
-import time
 import numpy as np
 import tempfile
 import streamlit as st
- 
-# Set page config for theme
+import time
+
+# Set page configuration for theme and layout
 st.set_page_config(
-    page_title="Object Detection Using YOLOv5",
+    page_title="Object Detection System",
     layout="wide"
 )
 
-# CSS for theme and to control video size
+# CSS for theme and to control button and text appearance
 st.markdown(
     """
     <style>
@@ -20,6 +20,7 @@ st.markdown(
             background-color: #1e1e1e;
             color: white;
             font-family: 'Roboto', sans-serif;
+            font-size: 18px;
         }
         .stApp h1 {
             text-align: center;
@@ -42,50 +43,54 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load the pretrained YOLOv5 model
+# Load the YOLOv5 model, utilizing GPU if available
 @st.cache_resource
 def load_model():
-    return torch.hub.load('ultralytics/yolov5', 'yolov5m')
+    # Load the YOLOv5 medium model; use CUDA if GPU is available, else CPU
+    return torch.hub.load('ultralytics/yolov5', 'yolov5m', device='cuda' if torch.cuda.is_available() else 'cpu')
 
+# Load the model into memory
 model = load_model()
 
-# Function to process frames
+# Function to process a single frame or image
 def process_frame(frame):
-    # Convert frame (numpy array) to PIL image
+    """
+    Process a single frame for object detection System.
+    Args:
+        frame: Input frame (numpy array, BGR format).
+    Returns:
+        Processed frame with YOLOv5 detections rendered.
+    """
+    # Convert BGR frame to RGB and create a PIL image
     image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-
-    # Perform YOLOv5 inference
     results = model(image)
-
-    # Render the results on the frame
     results.render()
-    processed_frame = results.ims[0]  # Annotated frame
-    processed_frame = cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)  # Convert back to BGR
+    # Convert the processed frame back to BGR format for OpenCV compatibility
+    processed_frame = results.ims[0]
+    return cv2.cvtColor(processed_frame, cv2.COLOR_RGB2BGR)
 
-    return processed_frame
+# Streamlit UI - Title and instructions
+st.title("Object Detection System")
+st.write("Upload a video, an image, or use your webcam for real-time object detection.")
 
-# Streamlit UI setup
-st.title("Object Detection Using YOLOv5")
-st.write("Upload a Video, an Image or use your Webcam or for Real-Time Object Detection.")
+# Sidebar configuration for selecting input options
+st.sidebar.title("Panel")
+use_webcam = st.sidebar.checkbox("Use Webcam") 
+uploaded_video = st.sidebar.file_uploader("Upload a video")
+uploaded_image = st.sidebar.file_uploader("Upload an image")  
 
-# Sidebar for input options
-st.sidebar.title("Control Panel")
-use_webcam = st.sidebar.checkbox("Use Webcam")
-uploaded_video = st.sidebar.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
-uploaded_image = st.sidebar.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-
-# Initialize webcam capture variable
-video_capture = None
-
-# Handle image upload
+# Handle image upload for object detection
 if uploaded_image is not None and not use_webcam and not uploaded_video:
     st.write("Processing Image...")
 
-    # Load and process the image
+    # Load the uploaded image and convert to numpy array
     input_image = Image.open(uploaded_image)
-    processed_image = process_frame(np.array(input_image))
+    input_frame = np.array(input_image)
 
-    # Create two columns for side-by-side display
+    # Process the frame for object detection
+    processed_image = process_frame(input_frame)
+
+    # Create two columns for displaying 
     col1, col2 = st.columns(2)
 
     with col1:
@@ -96,7 +101,7 @@ if uploaded_image is not None and not use_webcam and not uploaded_video:
         st.subheader("Processed Image")
         st.image(processed_image, use_container_width=True)
 
-    # Allow the user to download the processed image
+    # Save the processed image to a temporary file and allow download
     img_buffer = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
     Image.fromarray(processed_image).save(img_buffer, format="PNG")
     img_buffer.close()
@@ -108,7 +113,7 @@ if uploaded_image is not None and not use_webcam and not uploaded_video:
         mime="image/png"
     )
 
-# Handle video upload
+# Handle video upload for object detection
 if uploaded_video is not None and not use_webcam:
     st.write("Processing Video...")
 
@@ -120,38 +125,42 @@ if uploaded_video is not None and not use_webcam:
     # Open video using OpenCV
     cap = cv2.VideoCapture(temp_video.name)
 
-    # Define output video settings
+    # Get video properties for processing
     fps = int(cap.get(cv2.CAP_PROP_FPS))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for the output video
+    width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  
 
-    # Temporary file for processed video
+    # Prepare a temporary file for the processed video
     temp_processed_video = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
     out = cv2.VideoWriter(temp_processed_video.name, fourcc, fps, (width, height))
 
-    setframe = st.empty()
+    # Initialize a Streamlit container for displaying video frames
+    stframe = st.empty()
+    frame_count = 0
+    start_time = time.time()
 
+    # Process video frame by frame
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
-
-        # Process the frame
         processed_frame = process_frame(frame)
 
-        # Write the processed frame to the output video
         out.write(processed_frame)
 
-        # Display the processed frame
-        setframe.image(processed_frame, channels="BGR", use_container_width=True)
+        # Display the processed frame in the Streamlit app
+        stframe.image(processed_frame, channels="BGR", use_container_width=True)
+
+        # FPS tracking for performance monitoring
+        frame_count += 1
+        if frame_count % 10 == 0:
+            elapsed_time = time.time() - start_time
+            st.write(f"Processed {frame_count} frames in {elapsed_time:.2f} seconds (FPS: {frame_count / elapsed_time:.2f})")
 
     cap.release()
     out.release()
 
     st.write("Video processing complete.")
-
-    # Allow the user to download the processed video
     with open(temp_processed_video.name, "rb") as video_file:
         st.download_button(
             label="Download Processed Video",
@@ -159,44 +168,35 @@ if uploaded_video is not None and not use_webcam:
             file_name="processed_video.mp4",
             mime="video/mp4"
         )
-
-# Handle webcam input
 if use_webcam:
     st.write("Capturing from webcam...")
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FPS, 60)
 
-    # Start the webcam if not already started
-    if video_capture is None:
-        video_capture = cv2.VideoCapture(0)
-
-    if not video_capture.isOpened():
+    if not cap.isOpened():
         st.error("Could not access the webcam. Please check your device.")
     else:
-        setframe = st.empty()  # Placeholder for displaying frames
-        stop_webcam_button = st.button("Stop Webcam", key="stop_webcam")  # Button outside the loop
+        stframe = st.empty()  
+        stop_webcam_button = st.button("Stop Webcam", key="stop_webcam")  
 
-        while video_capture.isOpened():
-            ret, frame = video_capture.read()
+        while cap.isOpened():
+            ret, frame = cap.read()
             if not ret:
                 st.error("Failed to capture frame.")
                 break
 
-            # Remove mirroring
+            # Mirror the frame for natural webcam display
             frame = cv2.flip(frame, 1)
 
-            # Process the frame using YOLOv5 inference
             processed_frame = process_frame(frame)
 
             # Display the processed frame in the placeholder
-            setframe.image(processed_frame, channels="BGR", use_container_width=True)
+            stframe.image(processed_frame, channels="BGR", use_container_width=True)
 
-            # Stop webcam if the button is pressed or checkbox is unchecked
-            if stop_webcam_button or not use_webcam:
-
-                video_capture.release()  # Release the webcam
-                setframe.empty()  # Clear the frame
+            if stop_webcam_button:
+                cap.release()
+                stframe.empty()
                 st.write("Webcam feed stopped.")
                 break
 
-# Release the webcam if it's still open
-if video_capture and video_capture.isOpened():
-    video_capture.release()
+    cap.release()  
