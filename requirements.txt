@@ -1,0 +1,8 @@
+Flask==2.2.2        # Flask for building the API
+Pillow==9.5.0      # Pillow for image handling
+pandas==1.5.3       # Pandas for handling results from YOLOv5 (optional, but useful)
+torch==2.0.0
+torchvision==0.15.1
+torchaudio==2.0.0
+opencv-python-headless==4.10.0.84
+

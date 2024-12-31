@@ -1,0 +1,15 @@
+##GET
+#GET http://127.0.0.1:5000/ http/1.1
+GET http://127.0.0.1:5001/ 
+
+#POST http://127.0.0.1:5000/api/classify
+POST http://127.0.0.1:5001/api/video
+Content-Type: multipart/form-data
+
+--boundary
+Content-Disposition: form-data; name="image"; filename="000000579307"
+Content-Type: image/jpg
+
+<"C://Users//GGIS_LAPTOP_21//Downloads//Object Recognition Dataset//val2017//000000579307.jpg">
+
+--boundary--
