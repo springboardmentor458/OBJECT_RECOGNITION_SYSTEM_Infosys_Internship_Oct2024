@@ -1,0 +1,10 @@
+opencv-python==4.10.0.84
+Pillow
+streamlit
+numpy==1.23.5
+matplotlib
+pyyaml
+torch==2.0.1
+torchvision==0.15.2
+ultralytics
+scipy==1.14.1
